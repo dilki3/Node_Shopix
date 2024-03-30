@@ -1,28 +1,11 @@
 var db = require('./../helpers/db_helpers')
 var helper = require('./../helpers/helpers')
-// var multiparty = require(multiparty)
 var imageSavePath = "./public/img/"
 var image_base_url = helper.ImagePath();
 
-var deliver_price = 2.0
+var deliver_price = 2.5
 
 module.exports.controller = (app, io, socket_list) => {
-
-    const msg_success = "successfully";
-    const msg_fail = "fail";
-    const msg_invalidUser = "invalid username and password";
-    const msg_already_register = "this email already register ";
-    const msg_added_favorite = "add favorite list successfully";
-    const msg_removed_favorite = "removed favorite list successfully";
-    const msg_invalid_item = "invalid product item";
-    const msg_add_to_item = "item added into cart successfully ";
-    const msg_remove_to_cart = "item remove form cart successfully"
-    const msg_add_address = "address added successfully"
-    const msg_update_address = "address updated successfully"
-    const msg_remove_address = "address removed successfully"
-
-    const msg_add_payment_method = "payment method added successfully"
-    const msg_remove_payment_method = "payment method removed successfully"
 
     app.post('/api/app/login', (req, res) => {
         helper.Dlog(req.body);
@@ -132,7 +115,7 @@ module.exports.controller = (app, io, socket_list) => {
                 "INNER JOIN `brand_detail` AS `bd` ON `pd`.`brand_id` = `bd`.`brand_id` " +
 
                 "INNER JOIN `type_detail` AS `td` ON `pd`.`type_id` = `td`.`type_id` AND `td`.`status` = 1 " +
-                "WHERE `pd`.`status` = ? AND pd.created_date >= DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY `pd`.`prod_id` ORDER BY `pd`.`prod_id` ;" +
+                "WHERE `pd`.`status` = ? AND pd.created_date >= DATE_SUB(NOW(), INTERVAL 10 DAY) GROUP BY `pd`.`prod_id` ORDER BY `pd`.`prod_id` ;" +
                 //"WHERE  pd.status = ? AND pd.created_date >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND pd.cat_id = ? GROUP BY pd.prod_id;" +
 
                 "SELECT `type_id`, `type_name`, (CASE WHEN `image` != '' THEN  CONCAT( '" + image_base_url + "' ,'', `image` ) ELSE '' END) AS `image` , `color` FROM `type_detail` WHERE `status` = ? ;" +
@@ -1137,53 +1120,6 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/app/notification_list', (req, res) => {
-        helper.Dlog(req.body);
-        var reqObj = req.body
-
-        checkAccessToken(req.headers, res, (userObj) => {
-            db.query("SELECT `notification_id`, `ref_id`, `title`, `message`, `notification_type`, `is_read`, `created_date` FROM `notification_detail` WHERE `user_id` = ? AND `status` = 1", [userObj.user_id], (err, result) => {
-                if (err) {
-                    helper.ThrowHtmlError(err, res);
-                    return
-                }
-
-                res.json({
-                    "status": "1",
-                    "payload": result,
-                    "message": msg_success
-                })
-            })
-        }, "1")
-    })
-
-    app.post('/api/app/notification_read_all', (req, res) => {
-        helper.Dlog(req.body);
-        var reqObj = req.body
-
-        checkAccessToken(req.headers, res, (userObj) => {
-            db.query("UPDATE `notification_detail` SET `is_read` = '2', `modify_date` = NOW() WHERE `user_id` = ? AND `status` = 1", [userObj.user_id], (err, result) => {
-                if (err) {
-                    helper.ThrowHtmlError(err, res);
-                    return
-                }
-
-                if (result.affectedRows > 0) {
-                    res.json({
-                        "status": "1",
-                        "message": msg_success
-                    })
-                } else {
-                    res.json({
-                        "status": "0",
-                        "message": msg_fail
-                    })
-                }
-
-            })
-        }, "1")
-    })
-
     app.post('/api/app/update_profile', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body
@@ -1248,118 +1184,6 @@ module.exports.controller = (app, io, socket_list) => {
         },"1")
     })
 
-    app.post('/api/app/forgot_password_request', (req, res) => {
-        helper.Dlog(req.body);
-        var reqObj = req.body
-
-        helper.CheckParameterValid(res, reqObj, ["email"], () => {
-            db.query("SELECT `user_id` FROM `user_detail` WHERE `email` = ? ", [reqObj.email], (err, result) => {
-                if (err) {
-                    helper.ThrowHtmlError(err, res)
-                    return
-                }
-
-                if (result.length > 0) {
-                    var reset_code = helper.createNumber()
-                    db.query("UPDATE `user_detail` SET `reset_code` = ? WHERE `user_id` = ? ", [reset_code, result[0].user_id], (err, uResult) => {
-                        if (err) {
-                            helper.ThrowHtmlError(err, res)
-                            return
-                        }
-
-
-                        if (uResult.affectedRows > 0) {
-                            res.json({ "status": "1", "message": msg_success })
-                        } else {
-                            res.json({
-                                "status": "0",
-                                "message": msg_fail
-                            })
-                        }
-                    })
-
-                } else {
-                    res.json({
-                        "status": "0",
-                        "message": "user not exits"
-                    })
-                }
-            })
-        })
-    })
-
-
-    app.post('/api/app/forgot_password_verify', (req, res) => {
-        helper.Dlog(req.body);
-        var reqObj = req.body
-
-        helper.CheckParameterValid(res, reqObj, ["email", "reset_code"], () => {
-            db.query("SELECT `user_id` FROM `user_detail` WHERE `email` = ? AND `reset_code` ", [reqObj.email, reqObj.reset_code], (err, result) => {
-                if (err) {
-                    helper.ThrowHtmlError(err, res)
-                    return
-                }
-
-                if (result.length > 0) {
-                    var reset_code = helper.createNumber()
-                    db.query("UPDATE `user_detail` SET `reset_code` = ? WHERE `user_id` = ? ", [reset_code, result[0].user_id], (err, uResult) => {
-                        if (err) {
-                            helper.ThrowHtmlError(err, res)
-                            return
-                        }
-
-
-                        if (uResult.affectedRows > 0) {
-                            res.json({ "status": "1", "payload": { "user_id": result[0].user_id, "reset_code": reset_code }, "message": msg_success })
-                        } else {
-                            res.json({
-                                "status": "0",
-                                "message": msg_fail
-                            })
-                        }
-                    })
-
-                } else {
-                    res.json({
-                        "status": "0",
-                        "message": "user not exits"
-                    })
-                }
-            })
-        })
-
-
-    })
-
-    app.post('/api/app/forgot_password_set_password', (req, res) => {
-        helper.Dlog(req.body);
-        var reqObj = req.body
-
-        helper.CheckParameterValid(res, reqObj, ["user_id", "reset_code", "new_password"], () => {
-
-            var reset_code = helper.createNumber()
-            db.query("UPDATE `user_detail` SET `password` = ? , `reset_code` = ?  WHERE `user_id` = ? AND `reset_code` = ? ", [reqObj.new_password, reset_code, reqObj.user_id, reqObj.reset_code], (err, uResult) => {
-                if (err) {
-                    helper.ThrowHtmlError(err, res)
-                    return
-                }
-
-
-                if (uResult.affectedRows > 0) {
-                    res.json({ "status": "1", "message": "update password successfully" })
-                } else {
-                    res.json({
-                        "status": "0",
-                        "message": msg_fail
-                    })
-                }
-            })
-        })
-
-
-    })
-
-
     function getProductDetail(res, prod_id, user_id) {
         db.query("SELECT `pd`.`prod_id`, `pd`.`cat_id`, `pd`.`brand_id`, `pd`.`type_id`, `pd`.`name`, `pd`.`detail`, `pd`.`size`, `pd`.`color`, `pd`.`price`, `pd`.`created_date`, `pd`.`modify_date`, `cd`.`cat_name`, ( CASE WHEN `fd`.`fav_id` IS NOT NULL THEN 1 ELSE 0 END ) AS `is_fav` , IFNULL( `bd`.`brand_name`, '' ) AS `brand_name` , `td`.`type_name`, IFNULL(`od`.`price`, `pd`.`price` ) as `offer_price`, (CASE WHEN `imd`.`image` != '' THEN  CONCAT( '" + image_base_url + "' ,'', `imd`.`image` ) ELSE '' END) AS `image`, IFNULL(`od`.`start_date`,'') as `start_date`, IFNULL(`od`.`end_date`,'') as `end_date`, (CASE WHEN `od`.`offer_id` IS NOT NULL THEN 1 ELSE 0 END) AS `is_offer_active` FROM `product_detail` AS  `pd` " +
             "INNER JOIN `category_detail` AS `cd` ON `pd`.`cat_id` = `cd`.`cat_id` " +
@@ -1382,13 +1206,11 @@ module.exports.controller = (app, io, socket_list) => {
                 return;
             }
 
-            // result = result.replace_null()
-
-            // helper.Dlog(result);
+          
 
             if (result[0].length > 0) {
 
-                //result[0][0].nutrition_list = result[1];
+              
                 result[0][0].images = result[2];
 
 
@@ -1428,6 +1250,23 @@ module.exports.controller = (app, io, socket_list) => {
                 return callback(result, total)
             })
     }
+
+    const msg_success = "successfully";
+    const msg_fail = "fail";
+    const msg_invalidUser = "invalid username and password";
+    const msg_already_register = "this email already register ";
+    const msg_added_favorite = "add favorite list successfully";
+    const msg_removed_favorite = "removed favorite list successfully";
+    const msg_invalid_item = "invalid product item";
+    const msg_add_to_item = "item added into cart successfully ";
+    const msg_remove_to_cart = "item remove form cart successfully"
+    const msg_add_address = "address added successfully"
+    const msg_update_address = "address updated successfully"
+    const msg_remove_address = "address removed successfully"
+
+    const msg_add_payment_method = "payment method added successfully"
+    const msg_remove_payment_method = "payment method removed successfully"
+
 }
 
 function checkAccessToken(headerObj, res, callback, require_type = "") {

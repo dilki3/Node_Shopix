@@ -11,38 +11,6 @@ const msg_fail = "fail";
 module.exports.controller = (app, io, socket_list) => {
 
 
-    const msg_invalidUser = "invalid username and password";
-    const msg_already_register = "this email already register ";
-    const msg_brand_added = "Brand added Successfully.";
-    const msg_brand_update = "Brand updated Successfully.";
-    const msg_brand_delete = "Brand deleted Successfully.";
-    
-
-    const msg_category_added = "Category added Successfully.";
-    const msg_category_update = "Category updated Successfully.";
-    const msg_category_delete = "Category deleted Successfully.";
-
-    const msg_type_added = "Type added Successfully.";
-    const msg_type_update = "Type updated Successfully.";
-    const msg_type_delete = "Type deleted Successfully.";
-
-    const msg_product_added = "Product added Successfully.";
-    const msg_product_update = "Product updated Successfully.";
-    const msg_product_delete = "Product deleted Successfully.";
-
-    const msg_product_image_added = "Product image added Successfully.";
-    const msg_product_image_delete = "Product image deleted Successfully.";
-
-    const msg_offer_added = "offer added Successfully.";
-    const msg_offer_delete = "offer deleted Successfully.";
-
-    const msg_already_added = "this value already added here";
-    const msg_added = "already added here";
-
-    const msg_promo_code_added = "promo code added Successfully.";
-    const msg_promo_code_update = "promo code updated Successfully.";
-    const msg_promo_code_delete = "promo code deleted Successfully.";
-
     app.post('/api/admin/brand_add', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
@@ -847,7 +815,7 @@ module.exports.controller = (app, io, socket_list) => {
 
         })
     }
-    
+
     app.post('/api/admin/offer_add', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
@@ -929,7 +897,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, "2")
     })
 
-    app.post('/api/admin/promo_code_add', (req, res) => {
+    app.post('/api/admin/coupon_code_add', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -974,7 +942,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, "2" )
     })
 
-    app.post('/api/admin/promo_code_update', (req, res) => {
+    app.post('/api/admin/coupon_code_update', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -1008,7 +976,7 @@ module.exports.controller = (app, io, socket_list) => {
     })
 
 
-    app.post('/api/admin/promo_code_delete', (req, res) => {
+    app.post('/api/admin/coupon_code_delete', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -1041,7 +1009,7 @@ module.exports.controller = (app, io, socket_list) => {
     })
 
     
-    app.post('/api/admin/promo_code_list', (req, res) => {
+    app.post('/api/admin/coupon_code_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -1247,7 +1215,38 @@ module.exports.controller = (app, io, socket_list) => {
             } )
         },'2')
     } )
+    
+    const msg_invalidUser = "invalid username and password";
+    const msg_already_register = "this email already register ";
+    const msg_brand_added = "Brand added Successfully.";
+    const msg_brand_update = "Brand updated Successfully.";
+    const msg_brand_delete = "Brand deleted Successfully.";
+    
 
+    const msg_category_added = "Category added Successfully.";
+    const msg_category_update = "Category updated Successfully.";
+    const msg_category_delete = "Category deleted Successfully.";
+
+    const msg_type_added = "Type added Successfully.";
+    const msg_type_update = "Type updated Successfully.";
+    const msg_type_delete = "Type deleted Successfully.";
+
+    const msg_product_added = "Product added Successfully.";
+    const msg_product_update = "Product updated Successfully.";
+    const msg_product_delete = "Product deleted Successfully.";
+
+    const msg_product_image_added = "Product image added Successfully.";
+    const msg_product_image_delete = "Product image deleted Successfully.";
+
+    const msg_offer_added = "offer added Successfully.";
+    const msg_offer_delete = "offer deleted Successfully.";
+
+    const msg_already_added = "this value already added here";
+    const msg_added = "already added here";
+
+    const msg_promo_code_added = "promo code added Successfully.";
+    const msg_promo_code_update = "promo code updated Successfully.";
+    const msg_promo_code_delete = "promo code deleted Successfully.";
 
 }
 
