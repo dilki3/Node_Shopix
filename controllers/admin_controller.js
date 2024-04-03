@@ -1188,7 +1188,7 @@ module.exports.controller = (app, io, socket_list) => {
                                 break;
                         }
 
-                        db.query("INSERT INTO `notification_detail`( `ref_id`, `user_id`, `title`, `message`, `notification_type`) VALUES (?,?,?, ?,?)", [reqObj.order_id, reqObj.user_id, title, message, notiType  ] , (err, iResult) => {
+                        /*db.query("INSERT INTO `notification_detail`( `ref_id`, `user_id`, `title`, `message`, `notification_type`) VALUES (?,?,?, ?,?)", [reqObj.order_id, reqObj.user_id, title, message, notiType  ] , (err, iResult) => {
                             if (err) {
                                 helper.ThrowHtmlError(err);
                                 return
@@ -1199,7 +1199,7 @@ module.exports.controller = (app, io, socket_list) => {
                             }else{
                                 helper.Dlog("Notification Fail")
                             }
-                        } )
+                        } )*/
 
                         res.json({
                             "status":"1",
