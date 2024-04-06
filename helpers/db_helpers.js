@@ -31,31 +31,6 @@ function reconnect(connection, callback) {
         }
     } )
 
-    connection.on('error', (err) => {
-        helper.Dlog('App is connection Crash DB Helper (' + helper.serverYYYYMMDDHHmmss() + ')');
-
-        if (err.code === "PROTOCOL_CONNECTION_LOST") {
-            helper.Dlog("/!\\ PROTOCOL_CONNECTION_LOST Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        } else if (err.code === "PROTOCOL_ENQUEUE_AFTER_QUIT") {
-            helper.Dlog("/!\\ PROTOCOL_ENQUEUE_AFTER_QUIT Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        } else if (err.code === "PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR") {
-            helper.Dlog("/!\\ PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        } else if (err.code === "PROTOCOL_ENQUEUE_HANDSHAKE_TWICE") {
-            helper.Dlog("/!\\ PROTOCOL_ENQUEUE_HANDSHAKE_TWICE Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        } else if (err.code === "ECONNREFUSED") {
-            helper.Dlog("/!\\ ECONNREFUSED Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        } else if (err.code === "PROTOCOL_PACKETS_OUT_OF_ORDER") {
-            helper.Dlog("/!\\ PROTOCOL_PACKETS_OUT_OF_ORDER Cannot establish a connection with the database. /!\\ (" + err.code + ")");
-            reconnect(db, callback);
-        }  else {
-            throw err;
-        }
-    })
 
 }
 

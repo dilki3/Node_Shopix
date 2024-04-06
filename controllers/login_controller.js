@@ -11,10 +11,10 @@ module.exports.controller = (app, io, socket_list) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
-        helper.CheckParameterValid(res, reqObj, ["email", "password", "dervice_token"], () => {
+        helper.CheckParameterValid(res, reqObj, ["email", "password"], () => {
 
             var auth_token = helper.createRequestToken();
-            db.query("UPDATE `user_detail` SET `auth_token`= ?,`dervice_token`=?,`modify_date`= NOW() WHERE `email` = ? AND `password` = ? AND `status` = ?", [auth_token, reqObj.dervice_token, reqObj.email, reqObj.password, "1"], (err, result) => {
+            db.query("UPDATE `user_detail` SET `auth_token`= ?,`modify_date`= NOW() WHERE `email` = ? AND `password` = ? AND `status` = ?", [auth_token, reqObj.email, reqObj.password, "1"], (err, result) => {
 
                 if (err) {
                     helper.ThrowHtmlError(err, res);
@@ -49,7 +49,7 @@ module.exports.controller = (app, io, socket_list) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
-        helper.CheckParameterValid(res, reqObj, ["username", "email", "password", "dervice_token"], () => {
+        helper.CheckParameterValid(res, reqObj, ["username", "email", "password"], () => {
 
             db.query('SELECT `user_id`, `status` FROM `user_detail` WHERE `email` = ? ', [reqObj.email], (err, result) => {
 
@@ -63,7 +63,7 @@ module.exports.controller = (app, io, socket_list) => {
                 } else {
 
                     var auth_token = helper.createRequestToken();
-                    db.query("INSERT INTO `user_detail`( `username`, `email`, `password`, `auth_token`, `dervice_token`, `created_date`, `modify_date`) VALUES (?,?,?, ?,?, NOW(), NOW())", [reqObj.username, reqObj.email, reqObj.password, auth_token, reqObj.dervice_token], (err, result) => {
+                    db.query("INSERT INTO `user_detail`( `username`, `email`, `password`, `auth_token`, `created_date`, `modify_date`) VALUES (?,?, ?,?, NOW(), NOW())", [reqObj.username, reqObj.email, reqObj.password, auth_token], (err, result) => {
                         if (err) {
                             helper.ThrowHtmlError(err, res);
                             return
@@ -919,22 +919,6 @@ module.exports.controller = (app, io, socket_list) => {
 
                                         if (result) {
 
-                                            /*if (reqObj.payment_type == "1") {
-
-                                                db.query("INSERT INTO `notification_detail`( `ref_id`, `user_id`, `title`, `message`, `notification_type`) VALUES (?,?,?, ?,?)", [result.insertId, userObj.user_id,
-                                                    "Order Placed", "your order #" + result.insertId + " placed.", "2"], (err, iResult) => {
-                                                        if (err) {
-                                                            helper.ThrowHtmlError(err);
-                                                            return
-                                                        }
-
-                                                        if (iResult) {
-                                                            helper.Dlog("Notification Added Done")
-                                                        } else {
-                                                            helper.Dlog("Notification Fail")
-                                                        }
-                                                    })
-                                            }*/
 
                                             db.query("UPDATE `cart_detail` SET `status`= 2 ,`modify_date`= NOW() WHERE `user_id` = ? AND `status`= 1 ", [userObj.user_id], (err, cResult) => {
                                                 if (err) {
@@ -1213,7 +1197,7 @@ module.exports.controller = (app, io, socket_list) => {
 function checkAccessToken(headerObj, res, callback, require_type = "") {
     helper.Dlog(headerObj.access_token);
     helper.CheckParameterValid(res, headerObj, ["access_token"], () => {
-        db.query("SELECT `user_id`, `username`, `user_type`, `name`, `email`, `mobile`, `mobile_code`,  `auth_token`, `dervice_token`, `status` FROM `user_detail` WHERE `auth_token` = ? AND `status` = ? ", [headerObj.access_token, "1"], (err, result) => {
+        db.query("SELECT `user_id`, `username`, `user_type`, `name`, `email`, `mobile`, `mobile_code`,  `auth_token`, `status` FROM `user_detail` WHERE `auth_token` = ? AND `status` = ? ", [headerObj.access_token, "1"], (err, result) => {
             if (err) {
                 helper.ThrowHtmlError(err, res);
                 return
