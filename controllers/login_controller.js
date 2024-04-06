@@ -142,7 +142,7 @@ module.exports.controller = (app, io, socket_list) => {
                 res.json({
                     "status": "1", "payload": {
                         "offer_list": result[0],
-                        "best_sell_list": result[1],
+                        "new_arrival_list": result[1],
                         "type_list": result[2],
                         "list": result[3],
                     }, "message": msg_success

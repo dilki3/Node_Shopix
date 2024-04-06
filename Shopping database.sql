@@ -426,23 +426,6 @@ INSERT INTO `promo_code_detail` (`promo_code_id`, `code`, `title`, `description`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `review_detail`
---
-
-CREATE TABLE `review_detail` (
-  `review_id` int(11) NOT NULL,
-  `prod_id` int(11) NOT NULL DEFAULT 0,
-  `user_id` int(11) NOT NULL DEFAULT 0,
-  `rate` varchar(5) NOT NULL DEFAULT '',
-  `message` varchar(1000) NOT NULL DEFAULT '',
-  `status` int(1) NOT NULL DEFAULT 1,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp(),
-  `modify_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `size_detail`
 --
 

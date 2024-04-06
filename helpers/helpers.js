@@ -1,10 +1,6 @@
 var moment = require('moment-timezone');
-var fs = require('fs');
-const { format } = require('path');
-
 const app_debug_mode = true;
 const timezone_name = "Asia/Colombo";
-const msg_server_internal_error = "Server Internal Error"
 
 module.exports = {
 
@@ -13,65 +9,20 @@ module.exports = {
     },
 
     ThrowHtmlError: (err, res) => {
-
-        Dlog("---------------------------- App is Helpers Throw Crash(" + serverYYYYMMDDHHmmss() + ") -------------------------" )
-        Dlog(err.stack);
-
-        fs.appendFile('./crash_log/Crash' + serverDateTime('YYYY-MM-DD HH mm ss ms') + '.txt', err.stack, (err) => {
-            if(err) {
-                Dlog(err);
-            }
-        })
-
-        if(res) {
-            res.json({'status': '0', "message": msg_server_internal_error  })
-            return
+        console.error(err.stack);
+        if (res) {
+            res.json({'status': '0', "message": "Server Internal Error" });
         }
     },
 
     ThrowSocketError: (err, client, eventName ) => {
-
-        Dlog("---------------------------- App is Helpers Throw Crash(" + serverYYYYMMDDHHmmss() + ") -------------------------")
-        Dlog(err.stack);
-
-        fs.appendFile('./crash_log/Crash' + serverDateTime('YYYY-MM-DD HH mm ss ms') + '.txt', err.stack, (err) => {
-            if (err) {
-                Dlog(err);
-            }
-        })
-
+        console.error(err.stack);
         if (client) {
-            client.emit(eventName, { 'status': '0', "message": msg_server_internal_error } )
-            return
+            client.emit(eventName, { 'status': '0', "message": "Server Internal Error" });
         }
     },
 
     CheckParameterValid: (res, jsonObj, checkKeys, callback) => {
-
-        var isValid = true;
-        var missingParameter = "";
-
-        checkKeys.forEach( (key, indexOf)  => {
-            if(!Object.prototype.hasOwnProperty.call(jsonObj, key)) {
-                isValid = false;
-                missingParameter += key + " ";
-            }
-        });
-
-
-        if(!isValid) {
-
-            if(!app_debug_mode) {
-                missingParameter = "";
-            }
-            res.json({ 'status': '0', "message": "Missing parameter (" + missingParameter +")"  })
-        }else{
-            return callback()
-        }
-    },
-
-    CheckParameterValidSocket: (client, eventName, jsonObj, checkKeys, callback) => {
-
         var isValid = true;
         var missingParameter = "";
 
@@ -82,15 +33,34 @@ module.exports = {
             }
         });
 
-
         if (!isValid) {
-
             if (!app_debug_mode) {
                 missingParameter = "";
             }
-            client.emit(eventName, { 'status': '0', "message": "Missing parameter (" + missingParameter + ")" })
+            res.json({ 'status': '0', "message": "Missing parameter (" + missingParameter + ")" });
         } else {
-            return callback()
+            return callback();
+        }
+    },
+
+    CheckParameterValidSocket: (client, eventName, jsonObj, checkKeys, callback) => {
+        var isValid = true;
+        var missingParameter = "";
+
+        checkKeys.forEach((key, indexOf) => {
+            if (!Object.prototype.hasOwnProperty.call(jsonObj, key)) {
+                isValid = false;
+                missingParameter += key + " ";
+            }
+        });
+
+        if (!isValid) {
+            if (!app_debug_mode) {
+                missingParameter = "";
+            }
+            client.emit(eventName, { 'status': '0', "message": "Missing parameter (" + missingParameter + ")" });
+        } else {
+            return callback();
         }
     },
 
@@ -99,22 +69,24 @@ module.exports = {
         var result = '';
         for (let i = 20; i > 0; i--) {
             result += chars[Math.floor(Math.random() * chars.length)];
-
         }
-
         return result;
     },
 
     Dlog: (log) => {
-        return Dlog(log);
+        if (app_debug_mode) {
+            console.log(log);
+        }
     },
 
     serverDateTime:(format) => {
-        return serverDateTime(format);
+        var jun = moment(new Date());
+        jun.tz(timezone_name).format();
+        return jun.format(format);
     },
 
     serverYYYYMMDDHHmmss:()=>{
-        return serverYYYYMMDDHHmmss();
+        return module.exports.serverDateTime('YYYY-MM-DD HH:mm:ss'); // Corrected reference
     },
 
     createNumber:(length = 4) => {
@@ -130,28 +102,7 @@ module.exports = {
         var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         var result = '';
         for (let i = 10; i > 0; i--) result += chars[Math.floor(Math.random() * chars.length)];
-        return serverDateTime('YYYYMMDDHHmmssms') + result + '.' + extension;
-    },
-
-}
-
-
-function serverDateTime(format) {
-    var jun = moment(new Date());
-    jun.tz(timezone_name).format();
-    return jun.format(format);
-}
-
-function Dlog(log) {
-    if (app_debug_mode) {
-        console.log(log);
+        return module.exports.serverDateTime('YYYYMMDDHHmmssms') + result + '.' + extension; // Corrected reference
     }
-}
 
-function serverYYYYMMDDHHmmss() {
-    return serverDateTime('YYYY-MM-DD HH:mm:ss');
-}
-
-process.on('uncaughtException', (err) => {
-
-})
+};
